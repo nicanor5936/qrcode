@@ -1,0 +1,34 @@
+name: Build macOS
+
+on:
+  workflow_dispatch: # permet de lancer le build manuellement depuis l'onglet Actions
+  push:
+    branches: [main, master]
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Construire l'application macOS
+        run: npm run build:mac
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Mettre le résultat à disposition
+        uses: actions/upload-artifact@v4
+        with:
+          name: generateur-qrcode-macos
+          path: |
+            dist/*.dmg
+            dist/*.zip
